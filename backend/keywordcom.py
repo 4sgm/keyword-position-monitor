@@ -20,10 +20,17 @@ class KeywordComClient:
             return {self.auth_header: self.api_key, "Authorization": f"{self.auth_scheme} {self.api_key}"}
 
     def request(self, method: str, path: str, *, params: Dict[str, Any] = None, json: Any = None) -> httpx.Response:
+        import logging
         url = f"{self.base_url}{path}"
-        resp = self._client.request(method, url, headers=self._headers(), params=params, json=json)
-        resp.raise_for_status()
-        return resp
+        logging.info(f"[KeywordCom] Request: {method} {url} params={params} json={json}")
+        try:
+            resp = self._client.request(method, url, headers=self._headers(), params=params, json=json)
+            logging.info(f"[KeywordCom] Response: {resp.status_code} {resp.text}")
+            resp.raise_for_status()
+            return resp
+        except Exception as e:
+            logging.error(f"[KeywordCom] Error: {e}")
+            raise
 
     def list_projects(self) -> List[Dict[str, Any]]:
         path = settings.ENDPOINT_LIST_PROJECTS

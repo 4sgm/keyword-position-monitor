@@ -7,14 +7,17 @@ from .settings import settings
 from .models import SessionLocal, Monitor, RankHistory
 from .keywordcom import KeywordComClient
 from .utils import urls_match
+import logging
 
 def check_all_monitors():
     db: Session = SessionLocal()
     try:
         client = KeywordComClient()
         monitors = db.query(Monitor).all()
+        logging.info(f"[Scheduler] Running check_all_monitors for {len(monitors)} monitors")
         for m in monitors:
             try:
+                logging.info(f"[Scheduler] Checking monitor: id={m.id}, keyword_id={m.keyword_id}, keyword={m.keyword}")
                 history = client.get_keyword_history(m.keyword_id)
                 serp_rows = []
                 if isinstance(history, dict):
@@ -43,7 +46,9 @@ def check_all_monitors():
                 )
                 db.add(rh)
                 db.commit()
+                logging.info(f"[Scheduler] Saved RankHistory for monitor_id={m.id}, position={position}, found_url={found_url}")
             except Exception as e:
+                logging.error(f"[Scheduler] Error checking monitor id={m.id}: {e}")
                 rh = RankHistory(monitor_id=m.id, position=None, found_url=None, serp_sample=str({"error": str(e)}))
                 db.add(rh)
                 db.commit()
