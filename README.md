@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Keyword Position Monitor (Keyword.com API)
 
 A no-frills web app to monitor **Google positions for specific URLs** using the **Keyword.com API (v2)**.  
@@ -124,3 +125,6 @@ If your account uses different paths/fields, update the environment variables to
 ## License
 
 MIT
+=======
+# keyword-position-monitor
+>>>>>>> 7f808c7d97059bbe6e66d8160c3726c206ea9c55
