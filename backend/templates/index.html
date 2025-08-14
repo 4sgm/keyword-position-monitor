@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 {{ app_name }}</h1>
+    <p class="muted">Monitors Google positions for specific URLs via Keyword.com API. Configure your API details in <code>.env</code>.</p>
+
+    <section class="card">
+      <h2>Add Monitor</h2>
+      <form method="post" action="/monitors">
+        <div class="grid">
+          <div>
+            <label>Keyword</label>
+            <input type="text" name="keyword" required placeholder="e.g., wholesale bath sponge">
+          </div>
+          <div>
+            <label>Target URL (match by domain/path)</label>
+            <input type="url" name="target_url" required placeholder="https://www.example.com/product/123">
+          </div>
+          <div>
+            <label>Location</label>
+            <input type="text" name="location" value="United States">
+          </div>
+          <div>
+            <label>Device</label>
+            <select name="device">
+              <option value="desktop" selected>desktop</option>
+              <option value="mobile">mobile</option>
+            </select>
+          </div>
+          <div>
+            <label>Project ID (Keyword.com)</label>
+            <input type="text" name="project_id" placeholder="Optional but recommended">
+          </div>
+          <div>
+            <label>Keyword ID (Keyword.com)</label>
+            <input type="text" name="keyword_id" placeholder="Optional (auto-created if project provided)">
+          </div>
+          <div class="col-span-2">
+            <label>Notes</label>
+            <input type="text" name="notes" placeholder="Optional notes">
+          </div>
+        </div>
+        <div class="right">
+          <button type="submit" class="btn">Save Monitor</button>
+        </div>
+      </form>
+      <p class="muted small">🔐 When submitting forms or calling admin endpoints, your browser may ask for Basic Auth (default: admin/admin). Change in <code>.env</code>.</p>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <h2>Monitors</h2>
+        <form method="post" action="/run-now"><button class="btn">Run check now</button></form>
+      </div>
+      {% if not monitors %}
+        <p class="muted">No monitors yet. Add one above.</p>
+      {% else %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Keyword</th><th>Target URL</th><th>Project</th><th>Keyword ID</th><th>Chart</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in monitors %}
+            <tr>
+              <td>{{ m.id }}</td>
+              <td>{{ m.keyword }}</td>
+              <td><a href="{{ m.target_url }}" target="_blank">{{ m.target_url }}</a></td>
+              <td>{{ m.project_id or '' }}</td>
+              <td>{{ m.keyword_id or '' }}</td>
+              <td><canvas data-monitor-id="{{ m.id }}" width="400" height="120"></canvas></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
