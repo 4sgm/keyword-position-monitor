@@ -165,3 +165,4 @@ junit-*.xml
 
 # Include this subfolder (remove from ignore if present):
 !backend/
+backend/__pycache__/*
